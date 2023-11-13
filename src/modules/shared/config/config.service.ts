@@ -9,6 +9,7 @@ import { Configuration } from './config.keys';
 const schemaConfig = Joi.object()
   .keys({
     [Configuration.PORT]: Joi.string().required(),
+    [Configuration.KAFKA_BROKER]: Joi.string().required(),
   })
   .unknown();
 

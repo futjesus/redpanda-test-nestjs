@@ -1,3 +1,4 @@
-export const enum Configuration {
+export enum Configuration {
   PORT = 'PORT',
+  KAFKA_BROKER = 'KAFKA_BROKER',
 }

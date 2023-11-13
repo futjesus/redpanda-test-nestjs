@@ -3,6 +3,7 @@ version: '3.7'
 services:
   redpanda:
     image: docker.redpanda.com/redpandadata/redpanda:v23.2.15
+    container_name: redpanda
     command:
       - redpanda start
       - --smp 1
@@ -38,8 +39,10 @@ services:
       timeout: 3s
       retries: 5
       start_period: 5s
+
   console:
     image: docker.redpanda.com/redpandadata/console:v2.3.1
+    container_name: console
     entrypoint: /bin/sh
     command: -c "echo \"$$CONSOLE_CONFIG_FILE\" > /tmp/config.yml; /app/console"
     environment:
@@ -100,3 +103,5 @@ volumes:
 
 networks:
   redpanda_network:
+    name: redpanda
+    driver: bridge

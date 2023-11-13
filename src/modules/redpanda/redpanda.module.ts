@@ -8,4 +8,4 @@ import { AdapterConfig } from './adapters/out/adapters';
   controllers: [],
   providers: [...AdapterConfig, ...ApplicationConfig],
 })
-export class AppModule {}
+export class RedpandaModule {}

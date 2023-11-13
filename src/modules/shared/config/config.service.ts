@@ -10,6 +10,9 @@ const schemaConfig = Joi.object()
   .keys({
     [Configuration.PORT]: Joi.string().required(),
     [Configuration.KAFKA_BROKER]: Joi.string().required(),
+    [Configuration.USER_TOPIC]: Joi.string().required(),
+    [Configuration.KAFKA_NAME_SERVICE]: Joi.string().required(),
+    [Configuration.KAFKA_NAME_CONSUMER]: Joi.string().required(),
   })
   .unknown();
 

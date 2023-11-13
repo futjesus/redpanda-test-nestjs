@@ -1,31 +1,42 @@
 import { Module } from '@nestjs/common';
 import { ClientsModule, Transport } from '@nestjs/microservices';
 
-import { ConfigService, Configuration } from '../config';
-import { QueueService } from './queue.service';
+import { ConfigModule, ConfigService, Configuration } from '../config';
+import { QueueController } from './queue.controller';
 
 @Module({
   imports: [
+    ConfigModule,
     ClientsModule.registerAsync([
       {
-        name: 'REDPANDA_SERVICE',
+        name: 'KAFKA_SERVICE',
         inject: [ConfigService],
-        useFactory: async (configService: ConfigService) => ({
-          transport: Transport.KAFKA,
-          options: {
-            client: {
-              clientId: 'redpanda',
-              brokers: [configService.get(Configuration.KAFKA_BROKER)],
+        useFactory: async (configService: ConfigService) => {
+          const clientId = configService.get(Configuration.KAFKA_NAME_SERVICE);
+          const groupId = configService.get(Configuration.KAFKA_NAME_CONSUMER);
+          const brokers = configService
+            .get(Configuration.KAFKA_BROKER)
+            .split(',');
+
+          return {
+            transport: Transport.KAFKA,
+            options: {
+              client: {
+                clientId,
+                brokers,
+              },
+              consumer: {
+                groupId: `${groupId}-${process.pid}`,
+              },
+              subscribe: {
+                fromBeginning: true,
+              },
             },
-            consumer: {
-              groupId: 'redpanda-consumer-' + process.pid,
-            },
-          },
-        }),
+          };
+        },
       },
     ]),
   ],
-  providers: [QueueService],
-  exports: [QueueService],
+  controllers: [QueueController],
 })
 export class QueueModule {}

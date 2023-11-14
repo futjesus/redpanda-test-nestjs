@@ -2,7 +2,6 @@ import { Injectable, OnApplicationShutdown } from '@nestjs/common';
 import { ConsumerConfig, ConsumerSubscribeTopics, KafkaMessage } from 'kafkajs';
 
 import { ConfigService, Configuration } from '../../config';
-import { QueueConsumerPort } from '../../../loader/ports/out';
 
 import { IConsumer } from './kafka-consumer.interface';
 import { KafkaConsumer } from './kafka.consumer';
@@ -16,9 +15,7 @@ interface KafkajsConsumerOptions<
 }
 
 @Injectable()
-export class KafkaConsumerService
-  implements OnApplicationShutdown, QueueConsumerPort
-{
+export class KafkaConsumerService implements OnApplicationShutdown {
   private readonly consumers: IConsumer[] = [];
 
   constructor(private readonly configService: ConfigService) {}

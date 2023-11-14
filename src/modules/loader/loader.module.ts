@@ -2,13 +2,8 @@ import { Module } from '@nestjs/common';
 
 import { ApplicationConfig } from './application';
 import { AdapterQueueConfig } from './adapters';
-import { AdapterQueuePortConfig } from './adapters/out/queue';
 
 @Module({
-  providers: [
-    ...ApplicationConfig,
-    ...AdapterQueuePortConfig,
-    ...AdapterQueueConfig,
-  ],
+  providers: [...AdapterQueueConfig, ...ApplicationConfig],
 })
 export class LoaderModule {}

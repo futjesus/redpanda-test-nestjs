@@ -1,6 +1,10 @@
 import { Provider } from '@nestjs/common';
 
-import { QueueConsumerPort, QueueProducePort } from '../../../ports/out';
+import { ConfigService } from 'src/modules/shared/config';
+import {
+  KafkaConsumerService,
+  KafkaProducerService,
+} from 'src/modules/shared/kafka';
 
 import { QueueAdapter } from './queue.adapter';
 
@@ -10,17 +14,23 @@ interface Type<T> {
   new (...args: any[]): T;
 }
 
-const InjectBuilderAdapters = [QueueProducePort, QueueConsumerPort];
+const InjectBuilderAdapters = [
+  ConfigService,
+  KafkaProducerService,
+  KafkaConsumerService,
+];
 
 const useFactoryBuilder =
   (AdapterClass: Type<AdapterType>) =>
   (
-    queueProducePort: QueueProducePort,
-    queueConsumerPort: QueueConsumerPort,
+    config: ConfigService,
+    kafkaProduce: KafkaProducerService,
+    kafkaConsumer: KafkaConsumerService,
   ) => {
     return new AdapterClass({
-      queueProducePort,
-      queueConsumerPort,
+      config,
+      kafkaProduce,
+      kafkaConsumer,
     });
   };
 

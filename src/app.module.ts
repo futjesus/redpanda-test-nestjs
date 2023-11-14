@@ -7,15 +7,15 @@ import {
   KafkaModule,
 } from './modules/shared';
 
-import { RedpandaModule } from './modules/redpanda/redpanda.module';
+import { LoaderModule } from './modules/loader';
 
 @Module({
-  imports: [ConfigModule, KafkaModule, RedpandaModule],
+  imports: [ConfigModule, KafkaModule, LoaderModule],
 })
 export class AppModule {
   static port: number;
 
-  constructor(private readonly _configService: ConfigService) {
-    AppModule.port = Number(this._configService.get(Configuration.PORT));
+  constructor(private readonly configService: ConfigService) {
+    AppModule.port = Number(this.configService.get(Configuration.PORT));
   }
 }

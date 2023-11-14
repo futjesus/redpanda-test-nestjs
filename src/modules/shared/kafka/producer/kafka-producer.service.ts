@@ -2,12 +2,15 @@ import { Injectable, OnApplicationShutdown } from '@nestjs/common';
 import { Message } from 'kafkajs';
 
 import { ConfigService, Configuration } from '../../config';
+import { QueueProducePort } from '../../../loader/ports/out';
 
 import { KafkaProducer } from './kafka.producer';
 import { IProducer } from './kafka-producer.interface';
 
 @Injectable()
-export class KafkaProducerService implements OnApplicationShutdown {
+export class KafkaProducerService
+  implements OnApplicationShutdown, QueueProducePort
+{
   private readonly producers = new Map<string, IProducer>();
 
   constructor(private readonly configService: ConfigService) {}

@@ -5,6 +5,7 @@ import { QueueAdapter } from '../adapters/out/queue';
 import { ConsumptionPort } from '../ports/in';
 
 import { ConsumptionApplication } from './consumption.application';
+import { ConfigService } from 'src/modules/shared';
 
 interface Type<T> {
   new (...args: any[]): T;
@@ -12,12 +13,13 @@ interface Type<T> {
 
 type ApplicationClassType = ConsumptionApplication;
 
-const InjectBuilderAdapters = [QueueAdapter];
+const InjectBuilderAdapters = [ConfigService, QueueAdapter];
 
 const useFactoryBuilder =
   (ApplicationClass: Type<ApplicationClassType>) =>
-  (queueAdapter: QueueAdapter) => {
+  (config: ConfigService, queueAdapter: QueueAdapter) => {
     return new ApplicationClass({
+      config,
       queueAdapter,
     });
   };

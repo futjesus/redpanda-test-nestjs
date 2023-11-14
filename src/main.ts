@@ -1,4 +1,4 @@
-import { ValidationPipe, VersioningType } from '@nestjs/common';
+import { Logger, ValidationPipe, VersioningType } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import * as compression from 'compression';
 import helmet from 'helmet';
@@ -20,11 +20,11 @@ const bootstrap = async () => {
     type: VersioningType.URI,
   });
 
-  await app.listen(AppModule.port).then(() =>
-    console.info('info', `Server running on port: ${AppModule.port}`, {
-      start: new Date(),
-    }),
-  );
+  await app.listen(AppModule.port).then(() => {
+    const logger = new Logger('StartApplicstion');
+
+    logger.log(`Server running on port: ${AppModule.port} at ${new Date()}`);
+  });
 };
 
 bootstrap();

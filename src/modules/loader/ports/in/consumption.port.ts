@@ -1,1 +1,3 @@
-export abstract class ConsumptionPort {}
+export abstract class ConsumptionPort {
+  abstract loadConsumption(): void;
+}

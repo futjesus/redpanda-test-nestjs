@@ -19,7 +19,7 @@ export class QueueAdapter implements QueuePort {
 
   async listenTestMessage(): Promise<void> {
     const groupId = this.config.get(Configuration.KAFKA_NAME_CONSUMER);
-    const topic = this.config.get(Configuration.USER_TOPIC);
+    const topic = this.config.get(Configuration.MEMORY_TOPIC);
 
     await this.kafkaConsumer.consume({
       topic: {
@@ -30,6 +30,16 @@ export class QueueAdapter implements QueuePort {
       onMessage: (message: Record<string, string>) => {
         console.log(message);
       },
+    });
+  }
+
+  async publishMessage<T>(topic: string, message: T): Promise<void> {
+    this.kafkaProduce.produce(topic, {
+      key: String(process.pid),
+      value: JSON.stringify({
+        ...message,
+        timeStamp: new Date().toISOString(),
+      }),
     });
   }
 }

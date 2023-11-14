@@ -4,13 +4,13 @@ import {
   Configuration,
   ConfigModule,
   ConfigService,
-  QueueModule,
+  KafkaModule,
 } from './modules/shared';
 
 import { RedpandaModule } from './modules/redpanda/redpanda.module';
 
 @Module({
-  imports: [ConfigModule, QueueModule, RedpandaModule],
+  imports: [ConfigModule, KafkaModule, RedpandaModule],
 })
 export class AppModule {
   static port: number;

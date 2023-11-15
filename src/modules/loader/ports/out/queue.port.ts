@@ -1,7 +1,19 @@
+export type Message = Record<string, number | string | boolean>;
+
+export interface MessageProducerAction {
+  topic: string;
+  onMessage: (message: Message) => void;
+}
+
+export interface MessageConsumerAction<T> {
+  topic: string;
+  message: T;
+}
+
 export abstract class QueuePort {
-  abstract listenTestMessage(): Promise<void>;
-  abstract publishMessage(
-    topic: string,
-    message: Record<string, number | string | boolean>,
-  ): Promise<void>;
+  abstract listenTestMessage(params: MessageProducerAction): Promise<void>;
+  abstract publishMessage<T>({
+    topic,
+    message,
+  }: MessageConsumerAction<T>): Promise<void>;
 }

@@ -1,6 +1,10 @@
 import { v4 as uuid } from 'uuid';
 
-import { QueuePort } from 'src/modules/loader/ports/out';
+import {
+  MessageConsumerAction,
+  MessageProducerAction,
+  QueuePort,
+} from 'src/modules/loader/ports/out';
 import {
   ConfigService,
   Configuration,
@@ -19,9 +23,11 @@ export class QueueAdapter implements QueuePort {
     this.kafkaConsumer = kafkaConsumer;
   }
 
-  async listenTestMessage(): Promise<void> {
+  async listenTestMessage({
+    topic,
+    onMessage,
+  }: MessageProducerAction): Promise<void> {
     const groupId = this.config.get(Configuration.KAFKA_NAME_CONSUMER);
-    const topic = this.config.get(Configuration.MEMORY_TOPIC);
 
     await this.kafkaConsumer.consume({
       topic: {
@@ -29,13 +35,14 @@ export class QueueAdapter implements QueuePort {
         fromBeginning: true,
       },
       config: { groupId: `${groupId}-${process.pid}` },
-      onMessage: (message: Record<string, string>) => {
-        console.log(message);
-      },
+      onMessage,
     });
   }
 
-  async publishMessage<T>(topic: string, message: T): Promise<void> {
+  async publishMessage<T>({
+    topic,
+    message,
+  }: MessageConsumerAction<T>): Promise<void> {
     this.kafkaProduce.produce(topic, {
       key: String(process.pid),
       value: JSON.stringify({

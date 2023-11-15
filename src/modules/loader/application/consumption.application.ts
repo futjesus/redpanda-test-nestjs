@@ -25,12 +25,14 @@ export class ConsumptionApplication implements ConsumptionPort, OnModuleInit {
   private readonly logger: Logger;
 
   constructor({ config, queueAdapter }) {
-    this.queueAdapter = queueAdapter;
     this.config = config;
+    this.queueAdapter = queueAdapter;
     this.logger = new Logger('ConsumptionApplication');
   }
 
   async onModuleInit() {
+    await this.listenEvents();
+
     const cronExpression = this.config.get(
       Configuration.LOAD_CONSUMPTION_CRONJOB,
     );
@@ -46,6 +48,12 @@ export class ConsumptionApplication implements ConsumptionPort, OnModuleInit {
     });
   }
 
+  async listenEvents() {
+    const topic = this.config.get(Configuration.MEMORY_TOPIC);
+    const onMessage = () => {};
+    this.queueAdapter.listenTestMessage({ topic, onMessage });
+  }
+
   async loadConsumption(): Promise<void> {
     const pidusagePromise = util.promisify<number, Promise<Stat>>(pidusage);
     const topic = this.config.get(Configuration.MEMORY_TOPIC);
@@ -56,7 +64,7 @@ export class ConsumptionApplication implements ConsumptionPort, OnModuleInit {
         cpu: stats.cpu.toFixed(2),
         memory: this.formatBytes(stats.memory),
       };
-      this.queueAdapter.publishMessage(topic, memoryUsage);
+      this.queueAdapter.publishMessage({ topic, message: memoryUsage });
     } catch (error) {
       this.logger.error(error);
     }

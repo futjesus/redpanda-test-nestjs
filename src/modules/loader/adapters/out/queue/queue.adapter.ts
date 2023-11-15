@@ -1,3 +1,5 @@
+import { v4 as uuid } from 'uuid';
+
 import { QueuePort } from 'src/modules/loader/ports/out';
 import {
   ConfigService,
@@ -37,6 +39,7 @@ export class QueueAdapter implements QueuePort {
     this.kafkaProduce.produce(topic, {
       key: String(process.pid),
       value: JSON.stringify({
+        id: uuid(),
         ...message,
         timeStamp: new Date().toISOString(),
       }),

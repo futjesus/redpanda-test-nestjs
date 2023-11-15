@@ -5,12 +5,13 @@ import {
   ConfigModule,
   ConfigService,
   KafkaModule,
+  SocketModule,
 } from './modules/shared';
 
 import { LoaderModule } from './modules/loader';
 
 @Module({
-  imports: [ConfigModule, KafkaModule, LoaderModule],
+  imports: [ConfigModule, SocketModule, KafkaModule, LoaderModule],
 })
 export class AppModule {
   static port: number;

@@ -16,6 +16,7 @@ const bootstrap = async () => {
   app.use(compression());
   app.use(helmet());
 
+  app.enableShutdownHooks();
   app.enableVersioning({
     type: VersioningType.URI,
   });

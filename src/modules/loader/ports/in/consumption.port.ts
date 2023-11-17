@@ -1,4 +1,4 @@
 export abstract class ConsumptionPort {
-  abstract loadConsumption(): void;
-  abstract listenEvents(): void;
+  abstract startListenEvents(): void;
+  abstract startProduceEvents(): void;
 }

@@ -6,12 +6,19 @@ import {
   ConfigService,
   KafkaModule,
   SocketModule,
+  CronjobModule,
 } from './modules/shared';
 
 import { LoaderModule } from './modules/loader';
 
 @Module({
-  imports: [ConfigModule, SocketModule, KafkaModule, LoaderModule],
+  imports: [
+    ConfigModule,
+    CronjobModule,
+    SocketModule,
+    KafkaModule,
+    LoaderModule,
+  ],
 })
 export class AppModule {
   static port: number;

@@ -6,6 +6,7 @@ import { ConsumptionPort } from '../ports/in';
 
 import { ConsumptionApplication } from './consumption.application';
 import { ConfigService } from 'src/modules/shared';
+import { CronjobAdapter } from '../adapters/out/cronjob';
 
 interface Type<T> {
   new (...args: any[]): T;
@@ -13,14 +14,19 @@ interface Type<T> {
 
 type ApplicationClassType = ConsumptionApplication;
 
-const InjectBuilderAdapters = [ConfigService, QueueAdapter];
+const InjectBuilderAdapters = [ConfigService, QueueAdapter, CronjobAdapter];
 
 const useFactoryBuilder =
   (ApplicationClass: Type<ApplicationClassType>) =>
-  (config: ConfigService, queueAdapter: QueueAdapter) => {
+  (
+    config: ConfigService,
+    queueAdapter: QueueAdapter,
+    cronjobAdapter: CronjobAdapter,
+  ) => {
     return new ApplicationClass({
       config,
       queueAdapter,
+      cronjobAdapter,
     });
   };
 

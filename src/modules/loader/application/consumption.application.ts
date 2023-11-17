@@ -2,12 +2,12 @@ import { Logger, OnModuleInit } from '@nestjs/common';
 import * as pidusage from 'pidusage';
 import * as util from 'util';
 import { pid } from 'node:process';
-import * as cron from 'node-cron';
 
 import { ConsumptionPort } from '../ports/in';
 import { QueueAdapter } from '../adapters/out/queue';
 import { ConfigService, Configuration } from 'src/modules/shared';
 import { MemoryUsage } from '../domain';
+import { CronjobAdapter } from '../adapters/out/cronjob';
 
 interface Stat {
   cpu: number;
@@ -20,38 +20,49 @@ interface Stat {
 }
 
 export class ConsumptionApplication implements ConsumptionPort, OnModuleInit {
-  private readonly queueAdapter: QueueAdapter;
   private readonly config: ConfigService;
+  private readonly queueAdapter: QueueAdapter;
+  private readonly cronjobAdapter: CronjobAdapter;
   private readonly logger: Logger;
 
-  constructor({ config, queueAdapter }) {
+  constructor({ config, queueAdapter, cronjobAdapter }) {
+    this.logger = new Logger('ConsumptionApplication');
     this.config = config;
     this.queueAdapter = queueAdapter;
-    this.logger = new Logger('ConsumptionApplication');
+    this.cronjobAdapter = cronjobAdapter;
   }
 
   async onModuleInit() {
-    await this.listenEvents();
+    const isEnabledTopicToConsume =
+      this.config.get(Configuration.MEMORY_TOPIC_ENABLED_TO_CONSUME) === 'true';
+    const isEnabledTopicToProduce =
+      this.config.get(Configuration.MEMORY_TOPIC_ENABLED_TO_PRODUCE) === 'true';
 
-    const cronExpression = this.config.get(
-      Configuration.LOAD_CONSUMPTION_CRONJOB,
-    );
+    if (isEnabledTopicToConsume) {
+      await this.startListenEvents();
+    }
 
-    const cronTask = () => {
-      this.logger.log('Cron job is running!');
-      this.loadConsumption();
-    };
-
-    cron.schedule(cronExpression, cronTask, {
-      scheduled: true,
-      timezone: 'UTC',
-    });
+    if (isEnabledTopicToProduce) {
+      await this.startProduceEvents();
+    }
   }
 
-  async listenEvents() {
+  async startListenEvents() {
     const topic = this.config.get(Configuration.MEMORY_TOPIC);
+
     const onMessage = () => {};
     this.queueAdapter.listenTestMessage({ topic, onMessage });
+  }
+
+  async startProduceEvents() {
+    const expression = this.config.get(Configuration.LOAD_CONSUMPTION_CRONJOB);
+    this.cronjobAdapter.addTask({
+      expression,
+      callback: () => {
+        this.logger.log('Cron job is running!');
+        this.loadConsumption();
+      },
+    });
   }
 
   async loadConsumption(): Promise<void> {

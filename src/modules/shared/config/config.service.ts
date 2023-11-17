@@ -3,6 +3,7 @@ import { parse } from 'dotenv';
 import * as fs from 'fs';
 import * as Joi from 'joi';
 import * as path from 'path';
+import { parseInt, isNaN } from 'lodash';
 
 import { Configuration } from './config.keys';
 
@@ -14,6 +15,8 @@ const schemaConfig = Joi.object()
     [Configuration.KAFKA_NAME_SERVICE]: Joi.string().required(),
     [Configuration.KAFKA_NAME_CONSUMER]: Joi.string().required(),
     [Configuration.LOAD_CONSUMPTION_CRONJOB]: Joi.string().required(),
+    [Configuration.MEMORY_TOPIC_ENABLED_TO_CONSUME]: Joi.string().required(),
+    [Configuration.MEMORY_TOPIC_ENABLED_TO_PRODUCE]: Joi.string().required(),
   })
   .unknown();
 

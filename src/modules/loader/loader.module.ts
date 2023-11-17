@@ -1,9 +1,13 @@
 import { Module } from '@nestjs/common';
 
 import { ApplicationConfig } from './application';
-import { AdapterQueueConfig } from './adapters';
+import { AdapterCronjobConfig, AdapterQueueConfig } from './adapters';
 
 @Module({
-  providers: [...AdapterQueueConfig, ...ApplicationConfig],
+  providers: [
+    ...AdapterQueueConfig,
+    ...AdapterCronjobConfig,
+    ...ApplicationConfig,
+  ],
 })
 export class LoaderModule {}

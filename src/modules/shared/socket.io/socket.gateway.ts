@@ -2,21 +2,43 @@ import {
   WebSocketGateway,
   OnGatewayConnection,
   WebSocketServer,
+  OnGatewayDisconnect,
+  OnGatewayInit,
 } from '@nestjs/websockets';
-import { Socket } from 'socket.io';
+import { Server, Socket } from 'socket.io';
 
 import { SocketService } from './socket.service';
 
-@WebSocketGateway()
-export class SocketGateway implements OnGatewayConnection {
+@WebSocketGateway({
+  namespace: 'socket',
+  path: '/socket/socket.io',
+  cors: {
+    origin: '*',
+  },
+})
+export class SocketGateway
+  implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
+{
   @WebSocketServer()
-  private server: Socket;
+  public server: Server;
 
   constructor(private readonly socketService: SocketService) {}
 
-  handleConnection(socket: Socket): void {
-    this.socketService.handleConnection(socket);
+  afterInit(server: Server) {
+    this.socketService.server = server;
   }
 
-  // Implement other Socket.IO event handlers and message handlers
+  handleConnection(socket: Socket): void {
+    const { username } = socket.handshake.auth;
+
+    if (!username) {
+      socket.disconnect();
+    }
+
+    this.socketService.handleConnection(socket, username);
+  }
+
+  handleDisconnect(socket: Socket) {
+    this.socketService.handleDisconnect(socket);
+  }
 }

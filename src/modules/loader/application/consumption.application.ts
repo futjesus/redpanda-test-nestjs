@@ -8,6 +8,8 @@ import { QueueAdapter } from '../adapters/out/queue';
 import { ConfigService, Configuration } from 'src/modules/shared';
 import { MemoryUsage } from '../domain';
 import { CronjobAdapter } from '../adapters/out/cronjob';
+import { SocketAdapter } from '../adapters/out/socket';
+import { Message } from '../ports/out';
 
 interface Stat {
   cpu: number;
@@ -23,13 +25,15 @@ export class ConsumptionApplication implements ConsumptionPort, OnModuleInit {
   private readonly config: ConfigService;
   private readonly queueAdapter: QueueAdapter;
   private readonly cronjobAdapter: CronjobAdapter;
+  private readonly socketAdapter: SocketAdapter;
   private readonly logger: Logger;
 
-  constructor({ config, queueAdapter, cronjobAdapter }) {
+  constructor({ config, queueAdapter, cronjobAdapter, socketAdapter }) {
     this.logger = new Logger('ConsumptionApplication');
     this.config = config;
     this.queueAdapter = queueAdapter;
     this.cronjobAdapter = cronjobAdapter;
+    this.socketAdapter = socketAdapter;
   }
 
   async onModuleInit() {
@@ -50,8 +54,10 @@ export class ConsumptionApplication implements ConsumptionPort, OnModuleInit {
   async startListenEvents() {
     const topic = this.config.get(Configuration.MEMORY_TOPIC);
 
-    const onMessage = () => {};
-    this.queueAdapter.listenTestMessage({ topic, onMessage });
+    this.queueAdapter.listenTestMessage({
+      topic,
+      onMessage: (message: Message) => this.socketAdapter.emitMessage(message),
+    });
   }
 
   async startProduceEvents() {

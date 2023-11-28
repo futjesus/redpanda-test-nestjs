@@ -13,9 +13,9 @@ import {
 } from 'src/modules/shared';
 
 export class QueueAdapter implements QueuePort {
-  private config: ConfigService;
-  private kafkaProduce: KafkaProducerService;
-  private kafkaConsumer: KafkaConsumerService;
+  private readonly config: ConfigService;
+  private readonly kafkaProduce: KafkaProducerService;
+  private readonly kafkaConsumer: KafkaConsumerService;
 
   constructor({ config, kafkaProduce, kafkaConsumer }) {
     this.config = config;
@@ -32,7 +32,7 @@ export class QueueAdapter implements QueuePort {
     await this.kafkaConsumer.consume({
       topic: {
         topics: [topic],
-        fromBeginning: true,
+        fromBeginning: false,
       },
       config: { groupId: `${groupId}-${process.pid}` },
       onMessage,

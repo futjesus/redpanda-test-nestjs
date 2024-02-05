@@ -16,6 +16,11 @@ const schemaConfig = Joi.object()
     [Configuration.LOAD_CONSUMPTION_CRONJOB]: Joi.string().required(),
     [Configuration.MEMORY_TOPIC_ENABLED_TO_CONSUME]: Joi.string().required(),
     [Configuration.MEMORY_TOPIC_ENABLED_TO_PRODUCE]: Joi.string().required(),
+    [Configuration.POSTGRESQL_USERNAME]: Joi.string().required(),
+    [Configuration.POSTGRESQL_PASSWORD]: Joi.string().required(),
+    [Configuration.POSTGRESQL_HOST]: Joi.string().required(),
+    [Configuration.POSTGRESQL_PORT]: Joi.string().required(),
+    [Configuration.POSTGRESQL_DATABASE]: Joi.string().required(),
   })
   .unknown();
 

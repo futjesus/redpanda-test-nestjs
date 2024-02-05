@@ -3,13 +3,14 @@ import * as pidusage from 'pidusage';
 import * as util from 'util';
 import { pid } from 'node:process';
 
-import { ConsumptionPort } from '../ports/in';
-import { QueueAdapter } from '../adapters/out/queue';
-import { ConfigService, Configuration } from 'src/modules/shared';
+import { ConfigService, Configuration } from '../../shared';
 import { MemoryUsage } from '../domain';
+import { ConsumptionPort } from '../ports/in';
+import { Message } from '../ports/out';
+import { QueueAdapter } from '../adapters/out/queue';
+import { MemoryDatabaseAdapter } from '../adapters/out/database';
 import { CronjobAdapter } from '../adapters/out/cronjob';
 import { SocketAdapter } from '../adapters/out/socket';
-import { Message } from '../ports/out';
 
 interface Stat {
   cpu: number;
@@ -27,13 +28,21 @@ export class ConsumptionApplication implements ConsumptionPort, OnModuleInit {
   private readonly cronjobAdapter: CronjobAdapter;
   private readonly socketAdapter: SocketAdapter;
   private readonly logger: Logger;
+  private readonly memoryDatabaseAdapter: MemoryDatabaseAdapter;
 
-  constructor({ config, queueAdapter, cronjobAdapter, socketAdapter }) {
+  constructor({
+    config,
+    queueAdapter,
+    cronjobAdapter,
+    socketAdapter,
+    memoryDatabaseAdapter,
+  }) {
     this.logger = new Logger('ConsumptionApplication');
     this.config = config;
     this.queueAdapter = queueAdapter;
     this.cronjobAdapter = cronjobAdapter;
     this.socketAdapter = socketAdapter;
+    this.memoryDatabaseAdapter = memoryDatabaseAdapter;
   }
 
   async onModuleInit() {
@@ -56,7 +65,10 @@ export class ConsumptionApplication implements ConsumptionPort, OnModuleInit {
 
     this.queueAdapter.listenTestMessage({
       topic,
-      onMessage: (message: Message) => this.socketAdapter.emitMessage(message),
+      onMessage: (message: Message) => {
+        this.socketAdapter.emitMessage(message);
+        this.memoryDatabaseAdapter.create(message);
+      },
     });
   }
 

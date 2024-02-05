@@ -8,6 +8,7 @@ import { ConsumptionApplication } from './consumption.application';
 import { ConfigService } from 'src/modules/shared';
 import { CronjobAdapter } from '../adapters/out/cronjob';
 import { SocketAdapter } from '../adapters/out/socket';
+import { MemoryDatabaseAdapter } from '../adapters/out/database';
 
 interface Type<T> {
   new (...args: any[]): T;
@@ -20,23 +21,26 @@ const InjectBuilderAdapters = [
   SocketAdapter,
   QueueAdapter,
   CronjobAdapter,
+  MemoryDatabaseAdapter,
 ];
 
-const useFactoryBuilder =
-  (ApplicationClass: Type<ApplicationClassType>) =>
-  (
+function useFactoryBuilder(ApplicationClass: Type<ApplicationClassType>) {
+  return function (
     config: ConfigService,
     socketAdapter: SocketAdapter,
     queueAdapter: QueueAdapter,
     cronjobAdapter: CronjobAdapter,
-  ) => {
+    memoryDatabaseAdapter: MemoryDatabaseAdapter,
+  ) {
     return new ApplicationClass({
       config,
       socketAdapter,
       queueAdapter,
       cronjobAdapter,
+      memoryDatabaseAdapter,
     });
   };
+}
 
 const ApplicationConfig: Provider[] = [
   {

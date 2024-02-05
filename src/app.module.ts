@@ -10,13 +10,15 @@ import {
 } from './modules/shared';
 
 import { LoaderModule } from './modules/loader';
+import { DatabaseModule } from './modules/shared/database';
 
 @Module({
   imports: [
     ConfigModule,
     CronjobModule,
-    SocketModule,
+    DatabaseModule,
     KafkaModule,
+    SocketModule,
     LoaderModule,
   ],
 })

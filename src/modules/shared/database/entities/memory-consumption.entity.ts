@@ -50,7 +50,6 @@ class MemoryConsumptionEntity {
     default: () => 'CURRENT_TIMESTAMP',
     nullable: false,
     name: TABLE_DETAIL.CREATED_AT,
-    select: false,
   })
   createdAt: string;
 }

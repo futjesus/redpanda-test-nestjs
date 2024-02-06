@@ -1,5 +1,5 @@
 import { Message, SocketPort } from 'src/modules/loader/ports/out';
-import { SocketService } from 'src/modules/shared/socket.io';
+import { EventListener, SocketService } from 'src/modules/shared/socket.io';
 
 export class SocketAdapter implements SocketPort {
   private socket: SocketService;
@@ -10,5 +10,12 @@ export class SocketAdapter implements SocketPort {
 
   async emitMessage(message?: Message): Promise<void> {
     this.socket.emitMessage(message);
+  }
+
+  async emitMessageNewUserConnected(callback: () => void): Promise<void> {
+    this.socket.registerEventListeners(
+      EventListener.CONNECT_NEW_USER,
+      callback,
+    );
   }
 }

@@ -13,8 +13,8 @@ class MemoryDatabaseAdapter implements MemoryPort {
     this.memoryRepository = memoryRepository;
   }
 
-  async find(): Promise<(MemoryUsage & { id: string })[]> {
-    throw new Error('Method not implemented.');
+  async find(): Promise<(MemoryUsage & { id: string; createdAt: string })[]> {
+    return this.memoryRepository.find();
   }
 
   async create(message: Message): Promise<void> {

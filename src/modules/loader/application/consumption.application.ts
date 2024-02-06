@@ -58,6 +58,27 @@ export class ConsumptionApplication implements ConsumptionPort, OnModuleInit {
     if (isEnabledTopicToProduce) {
       await this.startProduceEvents();
     }
+
+    // TODO: remove this method, is neccesary to review the problem with date
+    function addHours(date: string, hours: number) {
+      const newDate = new Date(date);
+      newDate.getTimezoneOffset();
+      const hoursToAdd = hours * 60 * 60 * 1000;
+      newDate.setTime(newDate.getTime() + hoursToAdd);
+      return newDate;
+    }
+
+    // Send old messages when the user is connected
+    this.socketAdapter.emitMessageNewUserConnected(async () => {
+      return this.memoryDatabaseAdapter.find().then((consumptions) =>
+        consumptions
+          .map(({ createdAt, ...consumption }) => ({
+            ...consumption,
+            timeStamp: addHours(createdAt, 7).toISOString(),
+          }))
+          .reverse(),
+      );
+    });
   }
 
   async startListenEvents() {

@@ -11,13 +11,24 @@ class MemoryRepository {
     private readonly memoryConsumptioEntityRepository: Repository<MemoryConsumptionEntity>,
   ) {}
 
-  public async find({ limit = 10 }) {
-    return this.memoryConsumptioEntityRepository.find({
-      order: {
-        createdAt: 'DESC',
-      },
-      take: limit,
-    });
+  public async find({ limit = 10 } = {}) {
+    try {
+      const memoryEntity = await this.memoryConsumptioEntityRepository.find({
+        order: {
+          id: 'DESC',
+        },
+        take: limit,
+      });
+
+      return memoryEntity.map(({ randomUuid: id, cpu, memory, createdAt }) => ({
+        id,
+        cpu,
+        memory,
+        createdAt,
+      }));
+    } catch {
+      console.log('Error when is trying to get values from the database');
+    }
   }
 
   public async create(

@@ -33,7 +33,7 @@
     "node-cron": "^3.0.3",
     "pg": "^8.11.3",
     "pidusage": "^3.0.2",
-    "reflect-metadata": "^0.2.1",
+    "reflect-metadata": "^0.1.14",
     "rxjs": "^7.8.1",
     "socket.io": "^4.7.2",
     "socket.io-client": "^4.7.2",
